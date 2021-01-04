@@ -1,0 +1,42 @@
+version: "3"
+services:
+  db:
+    image: "postgres:latest"
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=12345
+      - POSTGRES_DB=user-login-inforamation
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./pgdata/user-database:/var/lib/postgresql/data
+
+  nginx:
+    depends_on:
+      - api
+      - client
+    restart: always
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./nginx
+    ports:
+      - "3050:80"
+
+  api:
+    depends_on:
+      - db
+
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./api
+    volumes:
+      - ./api:/app
+
+  client:
+    stdin_open: true
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./client
+    volumes:
+      - /app/node_modules
+      - ./client:/app

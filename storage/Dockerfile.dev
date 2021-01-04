@@ -1,0 +1,4 @@
+From scratch
+ENTRYPOINT ["/no/such/file"]
+
+
