@@ -12,6 +12,7 @@ class Login extends Component {
 
 
   handleSubmit = async (event) => {
+
     event.preventDefault();
     const data=new FormData(event.target);
     const username=data.get('username');
@@ -28,6 +29,11 @@ class Login extends Component {
     localStorage.setItem('challange_token', values.data.token);
 
     this.setState({redirectToHome: true});
+    return <Redirect to="/home" />;
+
+
+
+    
   };
 
 
@@ -40,7 +46,7 @@ class Login extends Component {
     
 
 
-      return <Redirect to="/home" />
+      return <Redirect to="/home" />;
     }
     return (
       <div>

@@ -7,6 +7,8 @@ class RegisterPage extends Component {
   state = {
     username: '',
     password: '',
+    isPrivate: false,
+
   };
 
 
@@ -38,7 +40,11 @@ class RegisterPage extends Component {
   };
 
 
- 
+  onChangeCheck(e) {
+    this.state.isPrivate=!this.state.isPrivate;
+
+}
+
 
 
   render() {
@@ -61,6 +67,9 @@ class RegisterPage extends Component {
                 password:
                 <input type="password" name="repeatPassword" id="repeatPassword" />
             </div>
+            is it a private account?
+                <input name="isPublic" type="checkbox"  onChange= {this.onChangeCheck} />
+
 
           <input type="submit" value="Submit" />
         </form>

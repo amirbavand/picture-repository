@@ -1,19 +1,17 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom'
 
 
 
-class Profile extends Component {
+
+class Product extends Component {
     state = {
         xtoken: null,
+        caption: '',
         ownProfile: false,
         checkStatus: false,
-        file: null,
         previewImagesList:[],
-        previewImagesKeyList:[],
-        productRoute: '',
-        clicked:false
+        previewImagesKeyList:[]
 
 
 
@@ -27,7 +25,6 @@ class Profile extends Component {
 
     
         this.checkLoggedIn = this.checkLoggedIn.bind(this);
-
     
     }
     
@@ -35,8 +32,8 @@ class Profile extends Component {
         await this.checkLoggedIn();
     
         
-        console.log("I am checking");
-        console.log("whaaaaaaaaaaaat",this.state.xtoken);
+
+
         this.setState({ checkStatus: true });
     
     
@@ -46,17 +43,19 @@ class Profile extends Component {
       async checkLoggedIn() {
         try {
           const images_array=[];
-          const user_name = this.props.match.params.user_name;
-          console.log(user_name,"this is username");
-          console.log(this.state.xtoken);
+          const product_id = this.props.match.params.product_id;
 
-          const values = await axios.get('/api/profile',{ headers:{'x-access-token': this.state.xtoken, "profileUserName":user_name}});
-          console.log(values.data.product_keys);
-          console.log(values.data.image_preview_list);
+
+          const values = await axios.get('/api/productprofile',{ headers:{'x-access-token': this.state.xtoken, "productId":product_id}});
+          console.log(values.data);
+
+
+
+          
           const images=values.data.image_preview_list;
           const f="data:image/png;base64,"
           for(const image in images){
-            console.log(images[image]);
+
             const res=f.concat(images[image]);
             images_array.push(res)
 
@@ -66,8 +65,8 @@ class Profile extends Component {
 
           
           const keys=values.data.product_keys;
-          console.log("this is image",images);
 
+          
 
           this.setState({previewImagesList: images_array, previewImagesKeyList:  keys });
 
@@ -81,32 +80,35 @@ class Profile extends Component {
         
       }
 
+      handleClick(event){
+        event.preventDefault();
+
+    }
+    
 
 
     render() {
 
         const arraying=this.state.previewImagesList;
-        console.log("this is arraying",arraying);
 
+        
         if(!this.state.checkStatus){
             return <h4>loading the page</h4>
           }
+  //        <img src={res} />
 
-
+  <           img src={arraying } width="400" height="400"/>
 
         return (
           <div>
+              <h3>Caption</h3>
+
+            <p>{this.state.caption}</p>
+
         <ul className="list-group">
             {arraying.map((arraying,index) => (
-
-               <Link to={"/"+this.props.match.params.user_name+"/"+this.state.previewImagesKeyList[index]} key={this.state.previewImagesKeyList[index]}>
-
-                <button onClick={this.handleClick} >
-
-        <           img src={arraying } width="400" height="400"/>
+                <button onClick={this.handleClick} key={this.state.previewImagesKeyList[index]}>
             </button>
-            </Link>
-
 
             ) )},
         </ul>
@@ -121,4 +123,4 @@ class Profile extends Component {
       }
 
 }
-export default Profile;
+export default Product;
