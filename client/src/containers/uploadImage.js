@@ -40,13 +40,11 @@ class UploadImage extends Component {
         const formData = new FormData();
         console.log(this.state.files,"hiii");
 
-    //    formData.append('myImage',this.state.file);
         for (let i = 0; i < this.state.files.length; i++) {
             console.log("hiiiiiii");
             formData.append(`myImage`, this.state.files[i]);
     }
     
- //       formData.append('myImageName',this.state.isPrivateeeee);
 
         formData.append('imageCaption',this.state.caption);
         formData.append('isPrivate',this.state.isPrivate);
@@ -60,7 +58,7 @@ class UploadImage extends Component {
                 'x-access-token': this.state.xtoken
             }
         };
-        axios.post("api/upload",formData,config)
+        axios.post("write/upload",formData,config)
         .then((response) => {
             console.log(response.data)
             this.setState({status:"successfully uploaded"})

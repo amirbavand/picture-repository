@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom'
+
 
 
 
@@ -24,12 +26,12 @@ class Product extends Component {
         this.state.xtoken=token;
 
     
-        this.checkLoggedIn = this.checkLoggedIn.bind(this);
+        this.checkLoggedInGetProductInformation = this.checkLoggedInGetProductInformation.bind(this);
     
     }
     
     async componentDidMount() {
-        await this.checkLoggedIn();
+        await this.checkLoggedInGetProductInformation();
     
         
 
@@ -40,13 +42,13 @@ class Product extends Component {
     
       }
 
-      async checkLoggedIn() {
+      async checkLoggedInGetProductInformation() {
         try {
           const images_array=[];
           const product_id = this.props.match.params.product_id;
 
 
-          const values = await axios.get('/api/productprofile',{ headers:{'x-access-token': this.state.xtoken, "productId":product_id}});
+          const values = await axios.get('/read/productprofile',{ headers:{'x-access-token': this.state.xtoken, "productId":product_id}});
           console.log(values.data);
 
 
@@ -64,11 +66,13 @@ class Product extends Component {
           }
 
           
-          const keys=values.data.product_keys;
+          const keys=values.data.image_keys;
+          const caption=values.data.product_caption;
+          console.log(caption,"this is caption");
 
           
 
-          this.setState({previewImagesList: images_array, previewImagesKeyList:  keys });
+          this.setState({previewImagesList: images_array, previewImagesKeyList:  keys, caption:caption });
 
      //     this.state.checkStatus=true;
 
@@ -84,6 +88,9 @@ class Product extends Component {
         event.preventDefault();
 
     }
+    handleClick(){
+      console.log("hi");
+    }
     
 
 
@@ -95,9 +102,7 @@ class Product extends Component {
         if(!this.state.checkStatus){
             return <h4>loading the page</h4>
           }
-  //        <img src={res} />
 
-  <           img src={arraying } width="400" height="400"/>
 
         return (
           <div>
@@ -107,8 +112,14 @@ class Product extends Component {
 
         <ul className="list-group">
             {arraying.map((arraying,index) => (
-                <button onClick={this.handleClick} key={this.state.previewImagesKeyList[index]}>
-            </button>
+               < Link to={"/"+this.props.match.params.user_name+"/"+this.props.match.params.product_id+"/"+this.state.previewImagesKeyList[index]} key={this.state.previewImagesKeyList[index]}>
+
+                <button onClick={this.handleClick}>
+                  <img src={arraying } width="400" height="400"/>
+
+                </button>
+                </Link>
+
 
             ) )},
         </ul>

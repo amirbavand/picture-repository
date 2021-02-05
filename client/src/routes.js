@@ -9,7 +9,7 @@ import UploadImage from './containers/uploadImage'
 import Profile from './containers/profile'
 import Product from './containers/productInformation'
 
-
+import ImagePresentation from './containers/imagePage'
 
 
 
@@ -31,6 +31,8 @@ const Routes = () => (
             <Route exact path="/uploadimage" component={UploadImage} />
             <Route exact path="/:user_name" component={Profile} />
             <Route exact path="/:user_name/:product_id" component={Product} />
+            <Route exact path="/:user_name/:product_id/:image_id" component={ImagePresentation} />
+
 
 
 

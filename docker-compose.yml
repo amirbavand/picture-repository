@@ -13,7 +13,7 @@ services:
 
   nginx:
     depends_on:
-      - api
+      - auth
       - client
     restart: always
     build:
@@ -22,15 +22,38 @@ services:
     ports:
       - "3050:80"
 
-  api:
+  auth:
     depends_on:
       - db
 
     build:
       dockerfile: Dockerfile.dev
-      context: ./api
+      context: ./auth
     volumes:
-      - ./api:/app
+      - ./auth:/app
+      - ./image-repository:/app/image-repository
+
+  write-information:
+    depends_on:
+      - db
+
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./write-information
+    volumes:
+      - ./write-information:/app
+      - ./image-repository:/app/image-repository
+
+  read-information:
+    depends_on:
+      - db
+
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./read-information
+    volumes:
+      - ./read-information:/app
+      - ./image-repository:/app/image-repository
 
   client:
     stdin_open: true

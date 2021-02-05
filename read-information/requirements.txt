@@ -1,0 +1,5 @@
+Flask
+PyJWT
+Flask-SQLAlchemy
+psycopg2
+pillow

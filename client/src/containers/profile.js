@@ -13,7 +13,8 @@ class Profile extends Component {
         previewImagesList:[],
         previewImagesKeyList:[],
         productRoute: '',
-        clicked:false
+        clicked:false,
+        isPrivateAccount:''
 
 
 
@@ -50,7 +51,11 @@ class Profile extends Component {
           console.log(user_name,"this is username");
           console.log(this.state.xtoken);
 
-          const values = await axios.get('/api/profile',{ headers:{'x-access-token': this.state.xtoken, "profileUserName":user_name}});
+          const values = await axios.get('/read/profile',{ headers:{'x-access-token': this.state.xtoken, "profileUserName":user_name}});
+          if(values.data.massage=='this account is private'){
+            this.setState({isPrivateAccount:"this account is protected"});
+            return
+          }
           console.log(values.data.product_keys);
           console.log(values.data.image_preview_list);
           const images=values.data.image_preview_list;
@@ -110,6 +115,10 @@ class Profile extends Component {
 
             ) )},
         </ul>
+
+        <div>
+              {this.state.isPrivateAccount}
+        </div>
 
 
 
