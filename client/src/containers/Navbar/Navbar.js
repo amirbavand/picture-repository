@@ -24,11 +24,12 @@ class Navbar extends Component {
                                 <a className={item.cName} href={item.url}>
                                 {item.title}
                                 </a>
+ 
                             </li>
                         )
                     })}
                 </ul>
-                <Button>Sign Up</Button>
+                <Button className="signout-button">Sign out</Button>
             </nav>
         )
     }

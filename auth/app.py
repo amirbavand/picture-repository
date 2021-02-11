@@ -1,3 +1,4 @@
+import redis
 from flask import Flask, request, jsonify, make_response, send_file
 import jwt
 import datetime
@@ -22,9 +23,15 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://admin:12345@db/user-login-inforamation'
 
 app.config['SECRET_KEY'] = 'secretkey'
+ACCESS_EXPIRES = datetime.timedelta(minutes=2)
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = ACCESS_EXPIRES
+
+
 db.init_app(app)
-# app.config['UPLOAD_FOLDER'] = '/app/image-repo'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+# Setup our redis connection for storing the blacklisted tokens
+revoked_store = redis.StrictRedis(host='redis', port=6379, db=0,
+                                  decode_responses=True)
 
 
 def token_required(f):
@@ -42,6 +49,12 @@ def token_required(f):
             return jsonify({'message': 'token is missing'}), 401
 
         try:
+            entry = revoked_store.get(token)
+            if entry is None:
+                pass
+            else:
+                return jsonify({'message': 'token is invalid'}), 401
+
             data = jwt.decode(
                 token, app.config['SECRET_KEY'], algorithms=["HS256"])
             current_user = User.query.filter_by(
@@ -93,9 +106,18 @@ def login_user():
         return make_response('could not verify', 401)
     if check_password_hash(user.password, auth.password):
         token = jwt.encode({'userName': user.userName, 'exp': datetime.datetime.utcnow(
-        )+datetime.timedelta(minutes=20)}, app.config['SECRET_KEY'])
+        )+datetime.timedelta(minutes=2)}, app.config['SECRET_KEY'])
         return jsonify({'token': token})
     return make_response('could not verify', 401)
+
+
+# Endpoint for revoking the current users access token
+@app.route('/logout', methods=['DELETE'])
+@token_required
+def logout(current_user):
+    token = request.headers['x-access-token']
+    revoked_store.set(token, 'true', ACCESS_EXPIRES * 1.2)
+    return jsonify({"msg": "Access token revoked"}), 200
 
 
 @app.route('/', methods=['GET'])

@@ -11,6 +11,11 @@ services:
     volumes:
       - ./pgdata/user-database:/var/lib/postgresql/data
 
+  redis:
+    image: "redis:latest"
+    volumes:
+      - ./redis-vol:/data
+
   nginx:
     depends_on:
       - auth

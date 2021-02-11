@@ -1,5 +1,5 @@
 import React from 'react'
-import './Button.css'
+import './SignoutButton.css'
 
 const STYLES = [
     'btn--primary',

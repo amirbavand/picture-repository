@@ -3,3 +3,5 @@ PyJWT
 Flask-SQLAlchemy
 psycopg2
 pillow
+flask-jwt-extended
+redis
