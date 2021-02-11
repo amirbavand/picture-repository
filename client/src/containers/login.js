@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Redirect } from "react-router-dom";
+import { Redirect, Link } from "react-router-dom";
 
 
 class Login extends Component {
@@ -49,20 +49,35 @@ class Login extends Component {
       return <Redirect to="/home" />;
     }
     return (
-      <div>
+      <div className="form">
+        <div>
+          <h1>login</h1>
+        </div>
+
         <form  onSubmit={this.handleSubmit}>
           <div>
-            Username:
-          <input type="text" name="username" id="username" />
+          <input className="input_text" type="text" name="username" placeholder="username" id="username" />
 
           </div>
           <div>
-            Password:
-          <input type="password" name="password" id="password" />
+          <input className="input_text" type="password" name="password" placeholder="password" id="password" />
 
           </div>
           <div>
-          <input type="submit" value="Submit" />
+          <button type="submit" className="submitButton">submit</button>
+
+          </div>
+          <div>
+            <h2>Not registered yet, Rigister Now</h2>
+            <br/>
+            
+
+          </div>
+          <div>
+            <Link to="/register">
+          <button  className="register" >register</button>
+          </Link>
+
 
           </div>
         </form>

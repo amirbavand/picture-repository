@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Redirect } from "react-router-dom";
+import { Redirect, Link } from "react-router-dom";
 
 
 class RegisterPage extends Component {
@@ -68,26 +68,54 @@ class RegisterPage extends Component {
   render() {
 
     return (
-      <div>
+      <div className="form">
+
+        <div>
+          <h1>Register</h1>
+        </div>
+
         <form  onSubmit={this.handleSubmit}>
             <div>
-                usernme:
-                <input type="text" name="username" id="username" />
+                <input className="input_text" type="text" name="username" placeholder="username" id="username" />
             </div>
             <div>
-                password:
-                <input type="password" name="password" id="password" />
+                <input  className="input_text" type="password" name="password" placeholder="password" id="password" />
             </div>
             <div>
-                password:
-                <input type="password" name="repeatPassword" id="repeatPassword" />
+                <input className="input_text" type="password" name="repeatPassword" placeholder="repeat password" id="repeatPassword" />
             </div>
-            is it a private account?
-                <input name="isPublic" type="checkbox"  onChange= {this.onChangeCheck} />
 
 
-          <input type="submit" value="Submit" />
-        </form>
+            <div >
+            <label className="label">Is it a private account?</label>
+
+            <input id='myLabel'  name="isPublic" type="checkbox" label="fdkm"  onChange= {this.onChangeCheck} />
+
+
+
+            </div>
+            
+
+
+
+          <div>
+          <button type="submit" className="submitButton">submit</button>
+
+          </div>
+                  </form>
+        <div>
+            <h2>Already have an acoount, Login now</h2>
+            <br/>
+            
+
+          </div>
+          <div>
+            <Link to="/login">
+          <button  className="register" >Login</button>
+          </Link>
+
+
+          </div>
       <div>
         <h1>{this.state.status}</h1>
         </div>

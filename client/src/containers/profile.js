@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom'
+import { Link, Redirect } from 'react-router-dom'
 
 
 
 class Profile extends Component {
     state = {
+        notLogin: false,
         xtoken: null,
         ownProfile: false,
         checkStatus: false,
@@ -81,7 +82,9 @@ class Profile extends Component {
     
           return true;
       } catch (error) {
-          return false;
+        console.log("error accourddd");
+        this.setState({notLogin: true});
+        
         }
         
       }
@@ -96,6 +99,11 @@ class Profile extends Component {
         if(!this.state.checkStatus){
             return <h4>loading the page</h4>
           }
+        if(this.state.notLogin){
+          return <Redirect to="/login" />
+
+        }
+
 
 
 

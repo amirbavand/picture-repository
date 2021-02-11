@@ -56,7 +56,6 @@ class registerLogin extends Component {
         return (
           <div>
             <div>
-        <button onClick={this.onChange}>{this.state.buttonString}</button>
 
                 
                 {this.state.LoginMode && <Login></Login>}

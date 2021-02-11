@@ -61,7 +61,7 @@ class home extends Component {
         return (<Redirect to="/reglogin" />);
       }
         return (
-          <div>
+          <div >
 
             <Link to='/uploadimage'>
               <button type="button" className="btn btn-info">Add a new image </button>

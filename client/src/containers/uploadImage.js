@@ -9,6 +9,7 @@ class UploadImage extends Component {
         files: [],
         fileName: null,
         caption: null,
+        name: null,
         xtoken: null,
         isPrivate: false,
         isPrivateeeee: false,
@@ -25,6 +26,8 @@ class UploadImage extends Component {
         this.onChange = this.onChange.bind(this);
         this.onChangeCaption = this.onChangeCaption.bind(this);
         this.onChangeCheck = this.onChangeCheck.bind(this);
+        this.onChangeName = this.onChangeName.bind(this);
+
 
 
         console.log('hi');
@@ -90,7 +93,14 @@ class UploadImage extends Component {
         console.log(this.state.isPrivate);
   //      this.setState({caption:e.target.value});
 
+
+  
     }
+    onChangeName(e) {
+        this.state.name=e.target.value;
+        console.log(this.state.isPrivate);
+  
+    }   
     onChangeCheck(e) {
         this.state.isPrivate=!this.state.isPrivate;
 
@@ -98,16 +108,44 @@ class UploadImage extends Component {
 
     render() {
         return (
-         <div>
+
+         <div className="uploadForm">
+            <div>
+                <h1>Upload</h1>
+            </div>
+
             <form onSubmit={this.onFormSubmit}>
-                <h1>File Upload</h1>
-                <input type="file" multiple name="myImage" onChange= {this.onChange} />
-                <input type="text" name="caption" onChange= {this.onChangeCaption}/>
-                is it a private image?
-                <input name="isPublic" type="checkbox"  onChange= {this.onChangeCheck} />
+                <div>
+                <input className="custom-file-input" type="file" multiple name="myImage" onChange= {this.onChange} />
+
+                </div>
+                <div>
+                <button className="resetUploadedFiles">Reset files</button>
 
 
+                </div>
+
+                <div>
+                <input className="uploadName" type="text" placeholder="Name" maxLength="50" onChange= {this.onChangeName} />
+
+                </div>                
+                <div>
+                <textarea className="uploadCaption" placeholder="Write the caption with maximum 200 character here" maxLength="500" rows="15" name="caption" onChange={this.onChangeCaption} />
+
+                </div>
+
+                <div>
+                    Is it a private image?
+                    <input name="isPublic" type="checkbox"  onChange= {this.onChangeCheck} />
+                </div>
+                <div>
                 <button type="submit">Upload</button>
+
+
+                </div>
+
+
+
             </form>
             <h1>{this.state.status}</h1>
           </div> 
