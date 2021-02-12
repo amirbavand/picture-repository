@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import { Redirect, Link } from "react-router-dom";
 
 
 class UploadImage extends Component {
@@ -8,12 +9,16 @@ class UploadImage extends Component {
         file: null,
         files: [],
         fileName: null,
-        caption: null,
-        name: null,
+        title: '',
+        caption: '',
         xtoken: null,
         isPrivate: false,
         isPrivateeeee: false,
-        status: ''
+        status: '',
+        fileError: '',
+        titleError: '',
+        captionError: '',
+        fileInputKey: Date.now(),
 
 
       };
@@ -26,7 +31,8 @@ class UploadImage extends Component {
         this.onChange = this.onChange.bind(this);
         this.onChangeCaption = this.onChangeCaption.bind(this);
         this.onChangeCheck = this.onChangeCheck.bind(this);
-        this.onChangeName = this.onChangeName.bind(this);
+        this.onChangeTitle = this.onChangeTitle.bind(this);
+        this.onResetFiles = this.onResetFiles.bind(this);
 
 
 
@@ -42,13 +48,35 @@ class UploadImage extends Component {
         e.preventDefault();
         const formData = new FormData();
         console.log(this.state.files,"hiii");
+        let fileError='';
+        let titleError='';
+        let captionError='';
+        let problem=false;
+
+        if (this.state.files.length==0){
+            fileError="please choose some pictures";
+            problem=true;
+          }
+        if(this.state.title==''){
+            titleError="Please enter a title";
+            problem=true;
+          }
+        if(this.state.caption==''){
+            captionError="Please write a caption";
+            problem=true;
+        }
+        this.setState({fileError:fileError, titleError:titleError, captionError:captionError});
+
+        if(problem==true){
+            return;
+        }
 
         for (let i = 0; i < this.state.files.length; i++) {
             console.log("hiiiiiii");
             formData.append(`myImage`, this.state.files[i]);
     }
     
-
+        formData.append('imageTitle',this.state.title);
         formData.append('imageCaption',this.state.caption);
         formData.append('isPrivate',this.state.isPrivate);
 
@@ -64,8 +92,7 @@ class UploadImage extends Component {
         axios.post("write/upload",formData,config)
         .then((response) => {
             console.log(response.data)
-            this.setState({status:"successfully uploaded"})
-        //    alert("The file is successfully uploaded");
+            this.setState({status:"uploaded"})
         }).catch((error) => {
             this.setState({status:"error accourd"})
 
@@ -76,28 +103,22 @@ class UploadImage extends Component {
 
     }
     onChange(e) {
-    //    this.setState({file:e.target.files[0], fileName:e.target.files[0].name});
         this.setState({ files: [...this.state.files, ...e.target.files] })
- //       this.setState({file:e.target.files});
 
 
         console.log(this.state.files);
-        
-    //    console.log(e.target.files[0].name);
 
-        
     }
 
     onChangeCaption(e) {
         this.state.caption=e.target.value;
         console.log(this.state.isPrivate);
-  //      this.setState({caption:e.target.value});
 
 
   
     }
-    onChangeName(e) {
-        this.state.name=e.target.value;
+    onChangeTitle(e) {
+        this.state.title=e.target.value;
         console.log(this.state.isPrivate);
   
     }   
@@ -105,8 +126,17 @@ class UploadImage extends Component {
         this.state.isPrivate=!this.state.isPrivate;
 
     }
+    onResetFiles(e) {
+        this.setState({files:[], fileInputKey: Date.now()})
+        this.state.files=[];
+
+    }
 
     render() {
+        if(this.state.status=="uploaded"){
+            return <Redirect to="/home" />;
+
+        }
         return (
 
          <div className="uploadForm">
@@ -116,23 +146,33 @@ class UploadImage extends Component {
 
             <form onSubmit={this.onFormSubmit}>
                 <div>
-                <input className="custom-file-input" type="file" multiple name="myImage" onChange= {this.onChange} />
+                <input className="custom-file-input" type="file" multiple name="myImage" onChange= {this.onChange} key={this.state.fileInputKey} />
 
                 </div>
+                    <span style={{color: "red" }}>{this.state.fileError}</span>
+                <br/>
+
                 <div>
-                <button className="resetUploadedFiles">Reset files</button>
+                <button className="resetUploadedFiles" onClick={this.onResetFiles}>Reset files</button>
 
 
                 </div>
 
                 <div>
-                <input className="uploadName" type="text" placeholder="Name" maxLength="50" onChange= {this.onChangeName} />
+                <input className="uploadName" type="text" placeholder="Title" maxLength="50" onChange= {this.onChangeTitle} />
 
-                </div>                
+                </div>    
+                <span style={{color: "red" }}>{this.state.titleError}</span>
+                <br/>
+
+
                 <div>
                 <textarea className="uploadCaption" placeholder="Write the caption with maximum 200 character here" maxLength="500" rows="15" name="caption" onChange={this.onChangeCaption} />
 
                 </div>
+                <span style={{color: "red" }}>{this.state.captionError}</span>
+                <br/>
+                <br/>
 
                 <div>
                     Is it a private image?

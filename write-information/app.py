@@ -61,6 +61,7 @@ def token_required(f):
 def add_imagee(current_user):
     user_name = current_user.userName
     letters = string.ascii_letters
+
     product_name = (''.join(random.choice(letters) for i in range(16)))
     filenames = []
     if(request.form['isPrivate'] == 'true'):
@@ -70,21 +71,14 @@ def add_imagee(current_user):
 
     images = request.files.getlist('myImage')
     image_caption = request.form['imageCaption']
+    image_title = request.form['imageTitle']
+    current_time = datetime.datetime.now()
 
     if(len(images) > 0):
         os.mkdir('/app/image-repository/users/'+user_name +
                  '/'+'original-images/'+product_name)
-        if(not is_public):
-            os.mkdir('/app/image-repository/users/'+user_name +
-                     '/'+'private-preview/'+product_name)
-        else:
-            os.mkdir('/app/image-repository/users/'+user_name +
-                     '/'+'public-preview/'+product_name)
-
-        new_image_product = ImageProduct(userName=user_name,
-                                         name=product_name, caption=image_caption, isPublic=is_public)
-        db.session.add(new_image_product)
-        db.session.commit()
+        os.mkdir('/app/image-repository/users/'+user_name +
+                 '/'+'preview/'+product_name)
 
         for im in images:
 
@@ -98,14 +92,14 @@ def add_imagee(current_user):
                              '/'+'original-images/'+product_name+'/'+image_name+".png")
             img.thumbnail([800, 800])
 
-            if(not is_public):
+            img.save('/app/image-repository/users/'+user_name +
+                     '/'+'preview/'+product_name+'/'+image_name+".png")
 
-                img.save('/app/image-repository/users/'+user_name +
-                         '/'+'private-preview/'+product_name+'/'+image_name+".png")
-            else:
-
-                img.save('/app/image-repository/users/'+user_name +
-                         '/'+'public-preview/'+product_name+'/'+image_name+".png")
+        new_image_product = ImageProduct(userName=user_name,
+                                         name=product_name, productTitle=image_title, caption=image_caption,
+                                         isPublic=is_public, dateUploaded=current_time)
+        db.session.add(new_image_product)
+        db.session.commit()
 
         return jsonify({'massage': "successfuly uploaded to the  server"})
 

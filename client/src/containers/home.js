@@ -58,7 +58,7 @@ class home extends Component {
         return (<h4>loading the page</h4>);
       }
       if(!this.state.loggedIn){
-        return (<Redirect to="/reglogin" />);
+        return (<Redirect to="/login" />);
       }
         return (
           <div >

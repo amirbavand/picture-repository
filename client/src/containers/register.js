@@ -1,14 +1,18 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import { Redirect, Link } from "react-router-dom";
+import RegisterSuccessful from './registerSuccessful'
 
 
 class RegisterPage extends Component {
   state = {
-    username: '',
-    password: '',
     isPublic: true,
-    status: ''
+    registered: false,
+    userError: '',
+    passError: '',
+    repeatPassError:'',
+    generalError:'',
+
 
 
   };
@@ -31,32 +35,48 @@ class RegisterPage extends Component {
     const password=data.get('password');
     const passwordConfirm=data.get('repeatPassword');
     console.log(this.state.isPublic);
-    
-    if(password==passwordConfirm){
-        console.log("password_is_valid");
-        try {
-          const values=await axios.post('api/register',{"userName": username, "password": password, "isPublic":this.state.isPublic} );
-          this.setState({status:"successful"})
-
-    
-        } catch (err) {
-          console.log("the username already exists")
-          this.setState({status:"some information was wrong or error accourd"})
-
-    
-    
-        
-        }   
+    let usernameError='';
+    let passwordError='';
+    let repeatPasswordError='';
+    let generalError='';
+    let problem=false;
+    if(username==''){
+      usernameError="Please enter a username";
+      problem=true;
     }
-    else{
-        console.log("repeat_password");
+    if(password==''){
+      passwordError="Please enter a password";
+      problem=true;
+    }
+    if(passwordConfirm==''){
+      repeatPasswordError="Please repeat the password";
+      problem=true;
+    }
+    if(password!=passwordConfirm){
+      generalError="Password is not match with the repeated password";
+      problem=true;
+    
     }
 
+    this.setState({userError:usernameError, passError:passwordError, repeatPassError:repeatPasswordError, generalError:generalError});
+
+    if(problem==true){
+      return;
+    }
+    
+    console.log("password_is_valid");
+    try {
+      const values=await axios.post('api/register',{"userName": username, "password": password, "isPublic":this.state.isPublic} );
+      this.setState({registered:true})
+
+  } catch (err) {
+      console.log("the username already exists")
+      this.setState({generalError:"username already exists"})
 
 
 
   };
-
+  }
 
   onChangeCheck(e) {
     this.state.isPublic=!this.state.isPublic;
@@ -66,37 +86,59 @@ class RegisterPage extends Component {
 
 
   render() {
+    if(this.state.registered==true){
+      return(
+        <div>
+          <RegisterSuccessful>
+            
+          </RegisterSuccessful>
 
+        </div>
+
+
+
+      );
+    }
     return (
       <div className="form">
 
-        <div>
-          <h1>Register</h1>
-        </div>
+
 
         <form  onSubmit={this.handleSubmit}>
             <div>
                 <input className="input_text" type="text" name="username" placeholder="username" id="username" />
+                <span style={{color: "red" }}>{this.state.userError}</span>
+                  <br/>
+                  <br/>
+                  <br/>
             </div>
             <div>
                 <input  className="input_text" type="password" name="password" placeholder="password" id="password" />
+                <span style={{color: "red" }}>{this.state.passError}</span>
+                  <br/>
+                  <br/>
+                  <br/>
+
             </div>
             <div>
                 <input className="input_text" type="password" name="repeatPassword" placeholder="repeat password" id="repeatPassword" />
-            </div>
+                <span style={{color: "red" }}>{this.state.repeatPassError}</span>
+                  <br/>
+                  <br/>
+                  <br/>
 
+            </div>
+                <span style={{color: "red" }}>{this.state.generalError}</span>
+                  <br/>
+                  <br/>
 
             <div >
             <label className="label">Is it a private account?</label>
 
             <input id='myLabel'  name="isPublic" type="checkbox" label="fdkm"  onChange= {this.onChangeCheck} />
 
-
-
             </div>
-            
-
-
+            <br/>
 
           <div>
           <button type="submit" className="submitButton">submit</button>

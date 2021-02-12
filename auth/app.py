@@ -16,6 +16,7 @@ from models import User
 from models import ImageProduct
 from models import DeletedImage
 from extensions import db
+from sqlalchemy.dialects.postgresql import JSON
 
 # from gevent.pywsgi import WSGIServer
 
@@ -72,6 +73,7 @@ def create_user():
     data = request.get_json()
     current_user = User.query.filter_by(userName=data['userName']).first()
     user_name = (data['userName']).strip()
+    current_time = datetime.datetime.now()
     if(data['isPublic'] == True):
         is_public = True
     else:
@@ -81,15 +83,13 @@ def create_user():
         return jsonify({'massage': "user already exists."}), 409
     else:
         os.mkdir('/app/image-repository/users/'+user_name)
-
-        os.mkdir('/app/image-repository/users/'+user_name+'/public-preview')
-        os.mkdir('/app/image-repository/users/'+user_name+'/private-preview')
+        os.mkdir('/app/image-repository/users/'+user_name+'/preview')
         os.mkdir('/app/image-repository/users/'+user_name+'/original-images')
 
         hashed_password = generate_password_hash(
             data['password'], method='sha256')
         new_user = User(userName=user_name,
-                        password=hashed_password, isPublic=is_public)
+                        password=hashed_password, isPublic=is_public, dateCreated=current_time)
         db.session.add(new_user)
         db.session.commit()
         return jsonify({'massage': "user successfully created"})

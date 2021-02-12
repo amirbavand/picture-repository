@@ -59,11 +59,13 @@
 }
 
 @media screen and (max-width: 960px) {
+  .signout-button {
+    display: none;
+    width: 600px;
+  }
+
   .NavbarItems {
     position: relative;
-  }
-  .NavbarItems button {
-    display: none;
   }
 
   .nav-menu {
@@ -138,4 +140,35 @@
     color: #6568f4;
     transition: 250ms;
   }
+}
+
+:root {
+  --primary: #3acbf7;
+}
+
+.btn {
+  padding: 8px 20px;
+  border-radius: 4px;
+  outline: none;
+  border: none;
+  cursor: pointer;
+}
+
+.btn:hover {
+  padding: 8px 20px;
+  transition: all 0.3s ease-out;
+  background: #fff;
+  color: #6568f4;
+  transition: 250ms;
+}
+
+.btn--primary {
+  background-color: var(--primary);
+}
+
+.btn--medium {
+  padding: 8px 20px;
+  border-radius: 4px;
+  font-size: 18px;
+  color: #fff;
 }

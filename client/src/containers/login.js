@@ -7,7 +7,11 @@ class Login extends Component {
   state = {
     username: '',
     password: '',
-    redirectToHome: false
+    redirectToHome: false,
+    userError: '',
+    passError: '',
+    generalError:''
+
   };
 
 
@@ -17,19 +21,41 @@ class Login extends Component {
     const data=new FormData(event.target);
     const username=data.get('username');
     const password=data.get('password');
+    let usernameError='';
+    let passwordError='';
+    this.state.generalError='';
+    if (username==''){
+      usernameError="Username is empty"
+    }
+    if(password==''){
+      passwordError="Password is empty"
+    }
+    this.setState({userError:usernameError, passError:passwordError});
+
+    if(username==''|| password==''){
+      return;
+    }
+    console.log(password);
+    console.log(username);
 
 
-    const values=await axios.post('api/login',{},{
-      auth: {
-        username: username,
-        password: password 
-      }}
-    );
-    console.log(values);
-    localStorage.setItem('challange_token', values.data.token);
+    try {
+      const values=await axios.post('api/login',{},{
+        auth: {
+          username: username,
+          password: password 
+        }}
+      );
+      console.log(values.data);
+      localStorage.setItem('challange_token', values.data.token);
+      this.setState({redirectToHome: true});
+      return <Redirect to="/home" />;
+      
+    } catch (error) {
+      this.setState({generalError:"username or password is incorect"})
+      
+    }
 
-    this.setState({redirectToHome: true});
-    return <Redirect to="/home" />;
 
 
 
@@ -57,10 +83,23 @@ class Login extends Component {
         <form  onSubmit={this.handleSubmit}>
           <div>
           <input className="input_text" type="text" name="username" placeholder="username" id="username" />
+            <span style={{color: "red" }}>{this.state.userError}</span>
+          <br/>
+          <br/>
+          <br/>
+
+
 
           </div>
           <div>
           <input className="input_text" type="password" name="password" placeholder="password" id="password" />
+          <span style={{color: "red" }}>{this.state.passError}</span>
+          <br/>
+          <span style={{color: "red" }}>{this.state.generalError}</span>
+
+          <br/>
+          <br/>
+          <br/>
 
           </div>
           <div>

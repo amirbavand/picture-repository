@@ -67,7 +67,7 @@ class main extends Component {
     }
     console.log("salam");
 
-    return <Redirect to="/reglogin" />
+    return <Redirect to="/login" />
 
 
   }
