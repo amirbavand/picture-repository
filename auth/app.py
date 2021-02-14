@@ -15,7 +15,10 @@ import base64
 from models import User
 from models import ImageProduct
 from models import DeletedImage
+from models import FollowInformation
+
 from extensions import db
+
 from sqlalchemy.dialects.postgresql import JSON
 
 # from gevent.pywsgi import WSGIServer
@@ -90,7 +93,11 @@ def create_user():
             data['password'], method='sha256')
         new_user = User(userName=user_name,
                         password=hashed_password, isPublic=is_public, dateCreated=current_time)
+        new_user_follow_table = FollowInformation(userName=user_name,
+                                                  isPublic=is_public, following={}, followers={}, followRequests={})
+        db.session.add(new_user_follow_table)
         db.session.add(new_user)
+
         db.session.commit()
         return jsonify({'massage': "user successfully created"})
 
@@ -106,7 +113,7 @@ def login_user():
         return make_response('could not verify', 401)
     if check_password_hash(user.password, auth.password):
         token = jwt.encode({'userName': user.userName, 'exp': datetime.datetime.utcnow(
-        )+datetime.timedelta(minutes=2)}, app.config['SECRET_KEY'])
+        )+datetime.timedelta(minutes=20)}, app.config['SECRET_KEY'])
         return jsonify({'token': token})
     return make_response('could not verify', 401)
 

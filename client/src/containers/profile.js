@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import { Link, Redirect } from 'react-router-dom'
+import ProfileHeader from './profileHeader'
 
 
 
@@ -15,7 +16,9 @@ class Profile extends Component {
         previewImagesKeyList:[],
         productRoute: '',
         clicked:false,
-        isPrivateAccount:''
+        isPrivateAccount:'',
+        followStatus:'',
+        user_name:'admin'
 
 
 
@@ -29,65 +32,83 @@ class Profile extends Component {
 
     
         this.checkLoggedIn = this.checkLoggedIn.bind(this);
+        this.getStatus=this.getStatus.bind(this)
 
     
     }
     
     async componentDidMount() {
         await this.checkLoggedIn();
+        await this.getStatus();
     
         
         console.log("I am checking");
         console.log("whaaaaaaaaaaaat",this.state.xtoken);
-        this.setState({ checkStatus: true });
+        this.setState({ checkStatus: true, user_name: this.props.match.params.user_name});
     
     
     
       }
 
-      async checkLoggedIn() {
-        try {
-          const images_array=[];
-          const user_name = this.props.match.params.user_name;
-          console.log(user_name,"this is username");
-          console.log(this.state.xtoken);
+    async checkLoggedIn() {
+      try {
+        const images_array=[];
+        const user_name = this.props.match.params.user_name;
+        console.log(user_name,"this is username");
+        console.log(this.state.xtoken);
 
-          const values = await axios.get('/read/profile',{ headers:{'x-access-token': this.state.xtoken, "profileUserName":user_name}});
-          if(values.data.massage=='this account is private'){
-            this.setState({isPrivateAccount:"this account is protected"});
-            return
-          }
-          console.log(values.data.product_keys);
-          console.log(values.data.image_preview_list);
-          const images=values.data.image_preview_list;
-          const f="data:image/png;base64,"
-          for(const image in images){
-            console.log(images[image]);
-            const res=f.concat(images[image]);
-            images_array.push(res)
+        const values = await axios.get('/read/profile',{ headers:{'x-access-token': this.state.xtoken, "profileUserName":user_name}});
+        console.log(values.data,"this is it")
+        if(values.data.massage=='this account is private'){
+          this.setState({isPrivateAccount:"this account is protected"});
+          return
+        }
+        console.log(values.data.product_keys);
+        console.log(values.data.image_preview_list);
+        const images=values.data.image_preview_list;
+        const f="data:image/png;base64,"
+        for(const image in images){
+          console.log(images[image]);
+          const res=f.concat(images[image]);
+          images_array.push(res)
+
+        }
+
+        
+        const keys=values.data.product_keys;
+        console.log("this is image",images);
 
 
-
-          }
-
-          
-          const keys=values.data.product_keys;
-          console.log("this is image",images);
+        this.setState({previewImagesList: images_array, previewImagesKeyList:  keys });
 
 
-          this.setState({previewImagesList: images_array, previewImagesKeyList:  keys });
+  
+        return true;
+    } catch (error) {
+      console.log("error accourddd");
+      this.setState({notLogin: true});
+      
+      }
+      
+    }
 
-     //     this.state.checkStatus=true;
+    async getStatus(){
+      try {
+        const user_name = this.props.match.params.user_name;
 
-    
-          return true;
+        const values = await axios.get('/write/followstatus',{ headers:{'x-access-token': this.state.xtoken, "userToFollow":user_name}});
+        const status=values.data.status
+        this.setState({followStatus:status})
+
+        
       } catch (error) {
         console.log("error accourddd");
-        this.setState({notLogin: true});
-        
-        }
+
+
         
       }
+
+    }
 
 
 
@@ -109,6 +130,7 @@ class Profile extends Component {
 
         return (
           <div>
+            <ProfileHeader status={this.state.followStatus} userName={this.state.user_name} />
         <ul className="list-group">
             {arraying.map((arraying,index) => (
 

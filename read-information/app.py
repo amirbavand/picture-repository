@@ -56,14 +56,68 @@ def token_required(f):
     return decorated
 
 
+def load_own_profile(profile_user_name):
+    image_array = []
+    product_keys = os.listdir(
+        '/app/image-repository/users/'+profile_user_name+'/preview')
+    for product in product_keys:
+
+        product_images_list = os.listdir('/app/image-repository/users/'
+                                         + profile_user_name
+                                         + '/preview/'
+                                         + product)  # reads the PIL image
+        #            return jsonify({"massage": product_images_list})
+        product_image_to_preview_name = product_images_list[0]
+
+        with open('/app/image-repository/users/'
+                  + profile_user_name
+                  + '/preview/'
+                    + product+'/' +
+                  product_image_to_preview_name, "rb") as img_file:
+            encoded_img = base64.b64encode(img_file.read())
+        encoded_img = str(encoded_img, 'utf-8')
+
+        image_array.append(encoded_img)
+
+    return jsonify({'product_keys': product_keys, 'image_preview_list': image_array, 'massage': "successfull"})
+
+
+def load_some_one_else_profile(profile_user_name):
+    image_array = []
+    product_keys = ImageProduct.query.with_entities(ImageProduct.name).filter_by(
+        userName=profile_user_name, isPublic=True).all()
+
+    for product in product_keys:
+        product = product.name
+
+        product_images_list = os.listdir('/app/image-repository/users/'
+                                         + profile_user_name
+                                         + '/preview/'
+                                         + product)  # reads the PIL image
+        #            return jsonify({"massage": product_images_list})
+        product_image_to_preview_name = product_images_list[0]
+
+        with open('/app/image-repository/users/'
+                  + profile_user_name
+                  + '/preview/'
+                    + product+'/' +
+                  product_image_to_preview_name, "rb") as img_file:
+            encoded_img = base64.b64encode(img_file.read())
+        encoded_img = str(encoded_img, 'utf-8')
+
+        image_array.append(encoded_img)
+
+    return jsonify({'product_keys': product_keys, 'image_preview_list': image_array, 'massage': "successfull"})
+
+
 @app.route('/profile', methods=['GET'])
 @token_required
 def send_profile_information(current_user):
     image_array = []
-
     data = request.headers
     user_name = current_user.userName
     profile_user_name = (data['profileUserName'])
+
     if(user_name != profile_user_name):
         requested_profile_user = User.query.filter_by(
             userName=profile_user_name).first()
@@ -74,93 +128,10 @@ def send_profile_information(current_user):
             # did not check this path
             return jsonify({'massage': "this account is private"})
         else:
-            try:
-                os.remove('/app/image-repository/users/' +
-                          profile_user_name+'/public-preview/.DS_Store')
-            except:
-                pass
+            return load_some_one_else_profile(profile_user_name)
 
-            product_keys = os.listdir(
-                '/app/image-repository/users/'+profile_user_name+'/public-preview')
-            for product in product_keys:
-                if(not product.endswith('.DS_Store')):
-
-                    product_images_list = os.listdir('/app/image-repository/users/'
-                                                     + profile_user_name
-                                                     + '/public-preview/'
-                                                     + product)  # reads the PIL image
-                    if(True):
-                        #            return jsonify({"massage": product_images_list})
-                        product_image_to_preview_name = product_images_list[0]
-                        if(product_image_to_preview_name.endswith('.DS_Store')):
-                            product_image_to_preview_name = product_images_list[0]
-
-                        with open('/app/image-repository/users/'
-                                  + profile_user_name
-                                  + '/public-preview/'
-                                  + product+'/' +
-                                  product_image_to_preview_name, "rb") as img_file:
-                            encoded_img = base64.b64encode(img_file.read())
-                        encoded_img = str(encoded_img, 'utf-8')
-
-                        image_array.append(encoded_img)
-
-                    else:
-                        return jsonify({'massage': "could not handle"})
-
-            return jsonify({'product_keys': product_keys, 'image_preview_list': image_array, 'massage': "successfull"})
     else:
-
-        product_keys = os.listdir(
-            '/app/image-repository/users/'+profile_user_name+'/public-preview')
-        for product in product_keys:
-            if(not product.endswith('.DS_Store')):
-
-                product_images_list = os.listdir('/app/image-repository/users/'
-                                                 + profile_user_name
-                                                 + '/public-preview/'
-                                                 + product)  # reads the PIL image
-                try:
-                    product_image_to_preview_name = product_images_list[0]
-
-                    with open('/app/image-repository/users/'
-                              + profile_user_name
-                              + '/public-preview/'
-                              + product+'/' +
-                              product_image_to_preview_name, "rb") as img_file:
-                        encoded_img = base64.b64encode(img_file.read())
-                    encoded_img = str(encoded_img, 'utf-8')
-
-                    image_array.append(encoded_img)
-                except:
-                    return jsonify({"massage": "could not do that"}), 407
-
-        product_keys_private = os.listdir(
-            '/app/image-repository/users/'+profile_user_name+'/private-preview')
-        for product in product_keys_private:
-            if(not product.endswith('.DS_Store')):
-
-                product_images_list = os.listdir('/app/image-repository/users/'
-                                                 + profile_user_name
-                                                 + '/private-preview/'
-                                                 + product)  # reads the PIL image
-                try:
-                    product_image_to_preview_name = product_images_list[0]
-
-                    with open('/app/image-repository/users/'
-                              + profile_user_name
-                              + '/private-preview/'
-                              + product+'/' +
-                              product_image_to_preview_name, "rb") as img_file:
-                        encoded_img = base64.b64encode(img_file.read())
-                    encoded_img = str(encoded_img, 'utf-8')
-
-                    image_array.append(encoded_img)
-
-                except:
-                    return jsonify({"massage": "could not do that"}), 407
-
-        return jsonify({'product_keys': product_keys+product_keys_private, 'image_preview_list': image_array, 'massage': "successfull"})
+        return load_own_profile(profile_user_name)
 
 
 @ app.route('/productprofile', methods=['GET'])
