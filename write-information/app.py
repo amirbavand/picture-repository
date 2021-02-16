@@ -93,7 +93,7 @@ def add_imagee(current_user):
                     '/'+'original-images/'+product_name+'/'+image_name+".png")
             img = pilim.open('/app/image-repository/users/'+user_name +
                              '/'+'original-images/'+product_name+'/'+image_name+".png")
-            img.thumbnail([800, 800])
+            img.thumbnail([400, 400])
 
             img.save('/app/image-repository/users/'+user_name +
                      '/'+'preview/'+product_name+'/'+image_name+".png")

@@ -31,5 +31,7 @@ class DeletedImage(db.Model):
 class FollowInformation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     userName = db.Column(db.String(50))
+    isPublic = db.Column(db.Boolean)
     following = db.Column(JSON)
     followers = db.Column(JSON)
+    followRequests = db.Column(JSON)

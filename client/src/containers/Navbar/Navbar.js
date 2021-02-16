@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import './Navbar.css'
-import { Redirect } from "react-router-dom";
+import { Redirect, Link } from "react-router-dom";
 import axios from 'axios';
 
 class Navbar extends Component {
     state = { 
         clicked: false ,
-        signouted: false
+        signouted: false,
+        profileLink:''
     
     }
     constructor(props) {
@@ -18,6 +19,23 @@ class Navbar extends Component {
         this.handleSignout = this.handleSignout.bind(this);
     
     }
+    async componentDidMount() {
+        try {
+            const values = await axios.get('/read/username',{ headers:{'x-access-token': this.state.xtoken}});
+            const link='/'+values.data["username"];
+            this.setState({profileLink:link});
+
+            
+        } catch (error) {
+            console.log("error accured");
+            
+        }
+        
+    
+    
+    
+      }
+
 
     handleClick = () => {
 
@@ -48,6 +66,7 @@ class Navbar extends Component {
 
 
     render() {
+        
         if(this.state.signouted){
             return <Redirect to="/login" />
 
@@ -59,17 +78,17 @@ class Navbar extends Component {
                     <i className={this.state.clicked ? 'fas fa-times' : 'fas fa-bars'}></i>
                 </div>
                 <ul className={this.state.clicked ? 'nav-menu active' : 'nav-menu'}>
-                    <li key="1">
-                    <a className="nav-links" href="#">
-                                Home
-                                </a>
+
+
+                <li key="1">
+                        <Link className="nav-links" to="/home">Home</Link>
+
 
 
                     </li>
                     <li key="2">
-                    <a className="nav-links" href="#">
-                                Homee
-                                </a>
+                        <Link className="nav-links" to={this.state.profileLink}>Profile</Link>
+
 
 
                     </li>
